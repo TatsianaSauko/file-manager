@@ -1,0 +1,1 @@
+export { default as readFileWithStream } from "./cat.js";
