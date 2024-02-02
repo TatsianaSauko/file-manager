@@ -5,6 +5,7 @@ import readline from 'readline';
 import zlib from 'zlib';
 import crypto from 'crypto';
 import getInfoOS from './os/index.js'
+import calculateHash from './hash/index.js'
 import { readFileWithStream, displayDirectoryContents, renameFile, copyFile, moveFile, deleteFile } from './fs/index.js'
 
 const rl = readline.createInterface({
@@ -55,6 +56,9 @@ rl.on('line', async (input) => {
         break;
       case 'os':
         await getInfoOS(args[0]);
+        break;
+      case 'hash':
+        await calculateHash(path.resolve(currentDir, args[0]));
         break;
       case '.exit':
         rl.close();
