@@ -4,7 +4,7 @@ import path from 'path';
 import readline from 'readline';
 import zlib from 'zlib';
 import crypto from 'crypto';
-import { readFileWithStream } from './fs/index.js'
+import { readFileWithStream, displayDirectoryContents } from './fs/index.js'
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -32,11 +32,10 @@ rl.on('line', async (input) => {
         currentDir = newDir;
         break;
       case 'ls':
-        const files = await fs.readdir(currentDir);
-        files.forEach(file => console.log(file));
+        await displayDirectoryContents(currentDir);
         break;
       case 'cat':
-        readFileWithStream(currentDir, args[0])
+        await readFileWithStream(currentDir, args[0])
         break;
       case 'add':
         await fs.writeFile(path.resolve(currentDir, args[0]), '');
