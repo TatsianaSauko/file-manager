@@ -4,6 +4,7 @@ import path from 'path';
 import readline from 'readline';
 import zlib from 'zlib';
 import crypto from 'crypto';
+import getInfoOS from './os/index.js'
 import { readFileWithStream, displayDirectoryContents, renameFile, copyFile, moveFile, deleteFile } from './fs/index.js'
 
 const rl = readline.createInterface({
@@ -53,7 +54,7 @@ rl.on('line', async (input) => {
         await deleteFile(path.resolve(currentDir, args[0]));
         break;
       case 'os':
-        await getOSInfo(args[0]);
+        await getInfoOS(args[0]);
         break;
       case '.exit':
         rl.close();
