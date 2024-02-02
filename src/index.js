@@ -4,7 +4,7 @@ import path from 'path';
 import readline from 'readline';
 import zlib from 'zlib';
 import crypto from 'crypto';
-import { readFileWithStream, displayDirectoryContents, renameFile } from './fs/index.js'
+import { readFileWithStream, displayDirectoryContents, renameFile, copyFile } from './fs/index.js'
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -44,7 +44,7 @@ rl.on('line', async (input) => {
         await renameFile(path.resolve(currentDir, args[0]), path.resolve(currentDir, args[1]));
         break;
       case 'cp':
-        await fs.copyFile(path.resolve(currentDir, args[0]), path.resolve(currentDir, args[1]));
+        await copyFile(path.resolve(currentDir, args[0]), path.resolve(args[1], args[0]));
         break;
       case 'mv':
         await fs.rename(path.resolve(currentDir, args[0]), path.resolve(currentDir, args[1]));
