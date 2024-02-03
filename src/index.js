@@ -19,20 +19,9 @@ console.log(`You are currently in ${currentDir}`);
 
 rl.on('line', async (input) => {
   const [command, ...args] = input.split(' ');
-  // const args = [res.reduce((acc, curr, index, array) => {
-  //   if (curr.endsWith('/')) {
-  //     acc += curr.slice(0, -1) + ' ';
-  //   } else {
-  //     acc += curr;
-  //     if (index < array.length - 1) {
-  //       acc += ', ';
-  //     }
-  //   }
-  //   return acc;
-  // }, '')];
 
   try {
-    const fullPath = path.resolve(currentDir, args[0]);
+    const fullPath = args[0] ? path.resolve(currentDir, args[0]) : null;
     switch (command) {
       case 'up':
         if (path.resolve(currentDir, '..') !== path.parse(currentDir).root) {
@@ -40,39 +29,65 @@ rl.on('line', async (input) => {
         }
         break;
       case 'cd':
+        try {
         const newDir = path.resolve(currentDir, args[0]);
         await fs.access(newDir);
         currentDir = newDir;
+      }
+      catch {
+        console.log('Operation failed');
+      }
         break;
       case 'ls':
         await displayDirectoryContents(currentDir);
         break;
       case 'cat':
         try {
-          await readFileWithStream(currentDir, args[0])
-          break;
+          await readFileWithStream(currentDir, args[0]) 
         }
         catch {
           console.log('Operation failed');
         }
+        break;
       case 'add':
         try {
           await fs.writeFile(fullPath, '');
-          break;
-        }catch {
+        }
+        catch {
           console.log('Operation failed');
         }
+        break;
       case 'rn':
-        await renameFile(fullPath, path.resolve(currentDir, path.dirname(args[0]), args[1]));
+        try {
+          await renameFile(fullPath, path.resolve(currentDir, path.dirname(args[0]), args[1]));
+        }
+        catch {
+          console.log('Operation failed');
+        }
         break;
       case 'cp':
-        await copyFile(fullPath, path.resolve(currentDir, args[1], path.basename(fullPath)));
+        try {
+         await copyFile(fullPath, path.resolve(currentDir, args[1], path.basename(fullPath)));
+        }
+        catch {
+          console.log('Operation failed');
+        }
         break;
       case 'mv':
+        try {
         await moveFile(fullPath, path.resolve(currentDir, args[1], path.basename(fullPath)));
+      }
+      catch {
+        console.log('Operation failed');
+      }
         break;
       case 'rm':
+        try {
         await deleteFile(fullPath);
+      }
+      catch {
+        console.log('Operation failed');
+      }
         break;
       case 'os':
         await getInfoOS(args[0]);
@@ -81,10 +96,20 @@ rl.on('line', async (input) => {
         await calculateHash(fullPath);
         break;
       case 'compress':
+        try {
         await compressFile(fullPath, path.resolve(currentDir, args[1]));
+      }
+      catch {
+        console.log('Operation failed');
+      }
         break;
       case 'decompress':
+        try {
         await decompressFile(fullPath, args[1]);
+      }
+      catch {
+        console.log('Operation failed');
+      }
         break;
       case '.exit':
         rl.close();
