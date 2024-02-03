@@ -1,49 +1,27 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'fs/promises';
 
-async function displayDirectoryContents(currentDir) {
-  const contents = await fs.promises.readdir(currentDir);
-  const sortedContents = contents.sort();
-  const directories = [];
-  const files = [];
+async function displayDirectoryContents(dirPath) {
+  const entries = await fs.readdir(dirPath, { withFileTypes: true });
 
-  await Promise.all(sortedContents.map(async (item) => {
-    const pathToFile = path.resolve(currentDir, item);
-    try {
-      const stat = await fs.promises.lstat(pathToFile);
-      if (stat.isFile()) {
-        files.push({ name: item, type: 'File' });
-      } else {
-        directories.push({ name: item, type: 'Directory' });
-      }
-    } catch {
-      return;
+  entries.sort((a, b) => {
+    if (a.isDirectory() && b.isDirectory()) {
+      return a.name.localeCompare(b.name);
     }
+    if (a.isDirectory() && b.isFile()) {
+      return -1;
+    }
+    if (a.isFile() && b.isDirectory()) {
+      return 1;
+    }
+    return a.name.localeCompare(b.name);
+  });
+
+  const tableData = entries.map((entry) => ({
+    'Name': `${entry.name}`,
+    'Type': entry.isDirectory() ? 'Directory' : 'File',
   }));
 
-  const longestNameLength = Math.max(...[...directories, ...files].map(item => item.name.length));
-  console.log('|'.padEnd(longestNameLength + 27, '-') + '|');
-  console.log('| (index) | Name'.padEnd(longestNameLength + 15) + '|   Type    |');
-  console.log('|---------|'.padEnd(longestNameLength + 15, '-') + '|-----------|');
-  [...directories, ...files].forEach((item, index) => {
-    let paddedIndex = `${index}`;
-    if (index < 10) {
-      paddedIndex = ` ${index}`;
-    }
-
-    let typeWithPadding = item.type;
-    if (item.type === 'File') {
-      typeWithPadding = `   ${item.type}  `;
-    }
-
-    const padding = longestNameLength - item.name.length;
-    const paddingLeft = Math.floor(padding / 2);
-    const paddingRight = paddingLeft + padding % 2;
-    const paddedName = ' '.repeat(paddingLeft) + `'${item.name}'` + ' '.repeat(paddingRight);
-
-    console.log(`|   ${paddedIndex}    | ${paddedName} | ${typeWithPadding} |`);
-  });
-  console.log('|'.padEnd(longestNameLength + 27, '-') + '|');
+  console.table(tableData);
 }
 
 export default displayDirectoryContents;
