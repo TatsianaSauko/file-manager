@@ -24,7 +24,7 @@ async function getInfoOS(flag) {
       console.log(`Architecture: ${os.arch}`);
       break;
     default:
-      console.log("Wrong command\n");
+      console.log("Invalid input\n");
       break;
   }
 }

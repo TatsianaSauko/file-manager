@@ -9,9 +9,8 @@ const copyFile = async (sourcePath, destinationPath) => {
   
 	try {
 	  await pipelineAsync(readStream, writeStream);
-	  console.log('File copied successfully');
-	} catch (error) {
-	  console.error('Error copying file:', error);
+	} catch {
+	  console.log('Operation failed');
 	}
   };
   

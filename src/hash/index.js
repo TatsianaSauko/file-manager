@@ -5,8 +5,8 @@ const calculateHash = async (filePath) => {
     const hash = crypto.createHash('sha256');
     const input = fs.createReadStream(filePath);
 
-	input.on('error', (error) => {
-		console.error('Error reading file.');
+	input.on('error', () => {
+		console.log('Operation failed');
 	  });
 	
 

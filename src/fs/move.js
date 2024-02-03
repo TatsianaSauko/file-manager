@@ -9,17 +9,15 @@ const moveFile = async (sourcePath, destinationPath) => {
 
   try {
     await pipelineAsync(readStream, writeStream);
-    console.log('File copied successfully');
-  } catch (error) {
-    console.error('Error copying file:', error);
+  } catch {
+    console.log('Operation failed');
     return;
   }
 
   try {
     await fs.promises.unlink(sourcePath);
-    console.log('The original file was successfully deleted');
-  } catch (error) {
-    console.error('Error when deleting source file:', error);
+  } catch {
+    console.log('Operation failed');
   }
 };
 

@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from "path";
 
 const readFileWithStream = async (currentDir, fileName) => {
 	try {
@@ -15,8 +16,6 @@ const readFileWithStream = async (currentDir, fileName) => {
 	}catch(err) {
 		console.error(`File "${fileName}" does not exist\n`);
 	}
-	
-
 };
 
 export default readFileWithStream;

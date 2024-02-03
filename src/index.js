@@ -2,10 +2,9 @@ import fs from 'fs/promises';
 import os from 'os';
 import path from 'path';
 import readline from 'readline';
-import zlib from 'zlib';
-import crypto from 'crypto';
-import getInfoOS from './os/index.js'
-import calculateHash from './hash/index.js'
+import getInfoOS from './os/index.js';
+import calculateHash from './hash/index.js';
+import { compressFile, decompressFile} from  './zip/index.js';
 import { readFileWithStream, displayDirectoryContents, renameFile, copyFile, moveFile, deleteFile } from './fs/index.js'
 
 const rl = readline.createInterface({
@@ -20,8 +19,20 @@ console.log(`You are currently in ${currentDir}`);
 
 rl.on('line', async (input) => {
   const [command, ...args] = input.split(' ');
+  // const args = [res.reduce((acc, curr, index, array) => {
+  //   if (curr.endsWith('/')) {
+  //     acc += curr.slice(0, -1) + ' ';
+  //   } else {
+  //     acc += curr;
+  //     if (index < array.length - 1) {
+  //       acc += ', ';
+  //     }
+  //   }
+  //   return acc;
+  // }, '')];
 
   try {
+    const fullPath = path.resolve(currentDir, args[0]);
     switch (command) {
       case 'up':
         if (path.resolve(currentDir, '..') !== path.parse(currentDir).root) {
@@ -37,28 +48,43 @@ rl.on('line', async (input) => {
         await displayDirectoryContents(currentDir);
         break;
       case 'cat':
-        await readFileWithStream(currentDir, args[0])
-        break;
+        try {
+          await readFileWithStream(currentDir, args[0])
+          break;
+        }
+        catch {
+          console.log('Operation failed');
+        }
       case 'add':
-        await fs.writeFile(path.resolve(currentDir, args[0]), '');
-        break;
+        try {
+          await fs.writeFile(fullPath, '');
+          break;
+        }catch {
+          console.log('Operation failed');
+        }
       case 'rn':
-        await renameFile(path.resolve(currentDir, args[0]), path.resolve(currentDir, args[1]));
+        await renameFile(fullPath, path.resolve(currentDir, path.dirname(args[0]), args[1]));
         break;
       case 'cp':
-        await copyFile(path.resolve(currentDir, args[0]), path.resolve(args[1], args[0]));
+        await copyFile(fullPath, path.resolve(currentDir, args[1], path.basename(fullPath)));
         break;
       case 'mv':
-        await moveFile(path.resolve(currentDir, args[0]), path.resolve(args[1], args[0]));
+        await moveFile(fullPath, path.resolve(currentDir, args[1], path.basename(fullPath)));
         break;
       case 'rm':
-        await deleteFile(path.resolve(currentDir, args[0]));
+        await deleteFile(fullPath);
         break;
       case 'os':
         await getInfoOS(args[0]);
         break;
       case 'hash':
-        await calculateHash(path.resolve(currentDir, args[0]));
+        await calculateHash(fullPath);
+        break;
+      case 'compress':
+        await compressFile(fullPath, path.resolve(currentDir, args[1]));
+        break;
+      case 'decompress':
+        await decompressFile(fullPath, args[1]);
         break;
       case '.exit':
         rl.close();
