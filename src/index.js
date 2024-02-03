@@ -30,13 +30,13 @@ rl.on('line', async (input) => {
         break;
       case 'cd':
         try {
-        const newDir = path.resolve(currentDir, args[0]);
-        await fs.access(newDir);
-        currentDir = newDir;
-      }
-      catch {
-        console.log('Operation failed');
-      }
+          const newDir = path.resolve(currentDir, args[0]);
+          await fs.access(newDir);
+          currentDir = newDir;
+        }
+        catch {
+          console.log('Operation failed');
+        }
         break;
       case 'ls':
         await displayDirectoryContents(currentDir);
@@ -75,41 +75,46 @@ rl.on('line', async (input) => {
         break;
       case 'mv':
         try {
-        await moveFile(fullPath, path.resolve(currentDir, args[1], path.basename(fullPath)));
-      }
-      catch {
-        console.log('Operation failed');
-      }
+          await moveFile(fullPath, path.resolve(currentDir, args[1], path.basename(fullPath)));
+        }
+        catch {
+          console.log('Operation failed');
+        }
         break;
       case 'rm':
         try {
-        await deleteFile(fullPath);
-      }
-      catch {
-        console.log('Operation failed');
-      }
+          await deleteFile(fullPath);
+        }
+        catch {
+          console.log('Operation failed');
+        }
         break;
       case 'os':
         await getInfoOS(args[0]);
         break;
       case 'hash':
-        await calculateHash(fullPath);
+        try {
+          await calculateHash(fullPath);
+        }
+        catch {
+          console.log('Operation failed');
+        }
         break;
       case 'compress':
         try {
         await compressFile(fullPath, path.resolve(currentDir, args[1]));
-      }
-      catch {
+        }
+        catch {
         console.log('Operation failed');
-      }
+        }
         break;
       case 'decompress':
         try {
-        await decompressFile(fullPath, args[1]);
-      }
-      catch {
-        console.log('Operation failed');
-      }
+          await decompressFile(fullPath, args[1]);
+        }
+        catch {
+          console.log('Operation failed');
+        }
         break;
       case '.exit':
         rl.close();
