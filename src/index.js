@@ -24,8 +24,9 @@ rl.on('line', async (input) => {
     const fullPath = args[0] ? path.resolve(currentDir, args[0]) : null;
     switch (command) {
       case 'up':
-        if (path.resolve(currentDir, '..') !== path.parse(currentDir).root) {
-          currentDir = path.resolve(currentDir, '..');
+        const parentDir = path.resolve(currentDir, '..');
+        if (parentDir !== currentDir) {
+          currentDir = parentDir;
         }
         break;
       case 'cd':
@@ -43,7 +44,7 @@ rl.on('line', async (input) => {
         break;
       case 'cat':
         try {
-          await readFileWithStream(currentDir, args[0]) 
+          await readFileWithStream(currentDir, args[0]);
         }
         catch {
           console.log('Operation failed');
@@ -110,7 +111,7 @@ rl.on('line', async (input) => {
         break;
       case 'decompress':
         try {
-          await decompressFile(fullPath, args[1]);
+          await decompressFile(fullPath, path.resolve(currentDir, args[1]));
         }
         catch {
           console.log('Operation failed');
